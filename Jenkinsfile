@@ -17,19 +17,27 @@ pipeline {
                  sh 'pip install -r requirements.txt'
             }
         }
+        stage('Checkout SCM') {
+			steps {
+				git '/home/JenkinsDependencyCheckTest'
+			}
+		}
+
+		stage('OWASP DependencyCheck') {
+			steps {
+				dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+			}
+		}
         stage("build"){
             steps{
                 sh 'docker build -t changweicw/labtest1:latest .'
             }
         }
-        stage("deploy"){
-            steps{
-                sh 'docker ps -f name=savemepls | grep -o "savemepls" && docker kill $(docker ps -f name=savemepls | grep -o "savemepls")'
-                sh "printf 'y' | docker container prune"
-                sh 'docker run -d -p 127.0.0.1:3389:3389 --name savemepls changweicw/labtest1:latest'
-            }
-        }
-
        
     }
+    post {
+		success {
+			dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+		}
+	}
 }
