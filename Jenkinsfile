@@ -24,9 +24,9 @@ pipeline {
         }
         stage("deploy"){
             steps{
-                sh 'docker ps -f name=collabserver | grep -o "collabserver" && docker kill $(docker ps -f name=collabserver | grep -o "collabserver")'
+                sh 'docker ps -f name=savemepls | grep -o "savemepls" && docker kill $(docker ps -f name=savemepls | grep -o "savemepls")'
                 sh "printf 'y' | docker container prune"
-                sh 'docker run -d -p 127.0.0.1:3389:3389 --name collabserver --env-file /var/jenkins_home/.env raphaelchia/collab:latest'
+                sh 'docker run -d -p 127.0.0.1:3389:3389 --name savemepls changweicw/labtest1:latest'
             }
         }
 
