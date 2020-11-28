@@ -7,8 +7,14 @@ pipeline {
             }
         }
         stage('Compile') {
+            agent {
+                docker {
+                    image 'python:3.8'
+                }
+            }
             steps {
                 echo 'Compile the source code' 
+                 sh 'pip install -r requirements.txt'
             }
         }
         stage("build"){
@@ -16,21 +22,14 @@ pipeline {
                 sh 'docker build -t changweicw/labtest1:latest .'
             }
         }
-        stage('Security Check') {
-            steps {
-                echo 'Run the security check against the application' 
+        stage("deploy"){
+            steps{
+                sh 'docker ps -f name=collabserver | grep -o "collabserver" && docker kill $(docker ps -f name=collabserver | grep -o "collabserver")'
+                sh "printf 'y' | docker container prune"
+                sh 'docker run -d -p 127.0.0.1:3389:3389 --name collabserver --env-file /var/jenkins_home/.env raphaelchia/collab:latest'
             }
         }
-        stage('Run Unit Tests') {
-            steps {
-                echo 'Run unit tests from the source code' 
-            }
-        }
-        stage('Run Integration Tests') {
-            steps {
-                echo 'Run only crucial integration tests from the source code' 
-            }
-        }
+
        
     }
 }
