@@ -11,6 +11,11 @@ pipeline {
                 echo 'Compile the source code' 
             }
         }
+        stage("build"){
+            steps{
+                sh 'docker build -t changweicw/labtest1:latest .'
+            }
+        }
         stage('Security Check') {
             steps {
                 echo 'Run the security check against the application' 
@@ -26,10 +31,6 @@ pipeline {
                 echo 'Run only crucial integration tests from the source code' 
             }
         }
-        stage('Publish Artifacts') {
-            steps {
-                echo 'Save the assemblies generated from the compilation' 
-            }
-        }
+       
     }
 }
